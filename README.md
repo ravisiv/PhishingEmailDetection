@@ -1,6 +1,6 @@
 # PhishingEmailDetection
 
-## How to setup environment
+## How to setup environment?
 ```
 wget https://github.com/ravisiv/PhishingEmailDetection
 cd PhishingEmailDetection
