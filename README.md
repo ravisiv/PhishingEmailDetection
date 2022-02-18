@@ -1,5 +1,15 @@
 # PhishingEmailDetection
 
+# How to setup environment
+```
+wget https://github.com/ravisiv/PhishingEmailDetection
+cd PhishingEmailDetection
+source bin/activate
+jupyter-notebook
+
+```
+This will launch jupyter notebook with all required packages. 
+
 # How to setup data?
 
 **Works ONLY on Mac**
