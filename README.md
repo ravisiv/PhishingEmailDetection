@@ -2,7 +2,7 @@
 
 ## How to setup environment?
 ```
-wget https://github.com/ravisiv/PhishingEmailDetection
+wget https://github.com/ravisiv/PhishingEmailDetection.git
 cd PhishingEmailDetection
 source bin/activate
 jupyter-notebook
