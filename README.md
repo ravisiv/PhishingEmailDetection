@@ -29,4 +29,7 @@
  
  ```
  
+ ### Train and Test data
+ The dataframe contains a column `istestdata`, which is 1 for test data and 0 for train data. 
+ 
  _Push to Origin only after models runs and version if there are significant differences_
