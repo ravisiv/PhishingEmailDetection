@@ -127,3 +127,21 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.DS_Store
+.bazelversion
+bin/google-oauthlib-tool
+bin/markdown_py
+bin/pip 2
+bin/estimator_ckpt_converter
+bin/pip3 2
+*.9 2
+bin/pyrsa-encrypt
+bin/pyrsa-keygen
+bin/pyrsa-decrypt
+bin/import_pb_to_tensorboard
+bin/pyrsa-priv2pub
+bin/pyrsa-sign
+bin/pyrsa-verify
+bin/saved_model_cli
+bin/tensorboard
+bin/tf_upgrade_v2
