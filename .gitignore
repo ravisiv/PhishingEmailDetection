@@ -145,3 +145,6 @@ bin/pyrsa-verify
 bin/saved_model_cli
 bin/tensorboard
 bin/tf_upgrade_v2
+*.icloud
+*.gz
+*.gz
