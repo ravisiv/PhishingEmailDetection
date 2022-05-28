@@ -137,7 +137,7 @@ def get_urls_headers(msg):
 
 #Main method
 data_path = sys.argv[1]
-cur_files =  next(os.walk(dir_to_write))[2]
+cur_files =  next(os.walk(data_path))[2]
 
 #get msg type
 all_headers = []
