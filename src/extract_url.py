@@ -135,6 +135,20 @@ def get_urls_headers(msg):
     return all_headers,all_strip_urls, all_topdomains,all_subdomains, all_suffix
 
 
+def isBase64(sb):
+    try:
+        if isinstance(sb, str):
+            # If there's any unicode here, an exception will be thrown and the function will return false
+            sb_bytes = bytes(sb, 'ascii')
+        elif isinstance(sb, bytes):
+            sb_bytes = sb
+        else:
+            raise ValueError("Argument must be string or bytes")
+        return base64.b64encode(base64.b64decode(sb_bytes)) == sb_bytes
+    except Exception:
+        return False
+
+
 #Main method
 data_path = sys.argv[1]
 cur_files =  next(os.walk(data_path))[2]
