@@ -26,9 +26,9 @@ def get_sha1_hash(data):
     sha1.update(data)
     return sha1.hexdigest()
 
-def save_to_file(filename):
+def save_to_file(data,filename):
     with open(filename, 'w', newline='') as myfile:
-        (csv.writer(myfile, quoting=csv.QUOTE_ALL)).writerow(mylist)
+        (csv.writer(myfile, quoting=csv.QUOTE_ALL)).writerow(data)
 
 def get_target_dir(dirtype):
 	default_dir = "messages"
@@ -163,41 +163,35 @@ data_path = sys.argv[1]
 cur_files =  next(os.walk(data_path))[2]
 
 #get msg type
-all_headers = []
-all_urls = []
-all_topdomains = []
-all_subdomains = []
-all_suffix = []
+all_headers = set()
+all_urls = set()
+all_topdomains = set()
+all_subdomains = set()
+all_suffix = set()
 for file in cur_files:
     with open(f"{data_path}/{file}") as f:
         f_realpath = os.path.realpath(f.name)
-        print(f.name)
-        if (f.name != ".msgtype"):
+        if f.name.startswith("."):
             try:
+                print(f.name)
                 headers,urls,topdomains,subdomains,suffix = get_urls_headers(email.message_from_file(f))
-                all_headers.append(headers)
-                all_urls.append(urls)
-                all_topdomains.append(topdomains)
-                all_subdomains.append(subdomains)
-                all_suffix.append(suffix)
+                all_headers.add(headers)
+                all_urls.add(urls)
+                all_topdomains.add(topdomains)
+                all_subdomains.add(subdomains)
+                all_suffix.add(suffix)
             except Exception as e:
                 print("--------------------------------starting------------")
                 print(traceback.format_exc())
                 print("--------------------------------ending------------")
                 continue
 
-all_headers = list(set(all_headers))
-all_urls = list(set(all_urls))
-all_topdomains = list(set(all_topdomains))
-all_subdomains = list(set(all_subdomains))
-all_suffix = list(set(all_suffix))
-
 filename_digest = get_sha1_hash("".join(cur_files))
 conf_dir = get_target_dir("url")
 target_dir = f"{conf_dir}/{filename_digest}"
 
-save_to_file(f"{target_dir}/headers.csv")
-save_to_file(f"{target_dir}/urls.csv")
-save_to_file(f"{target_dir}/topdomains.csv")
-save_to_file(f"{target_dir}/subdomains.csv")
-save_to_file(f"{target_dir}/suffix.csv")
+save_to_file(list(all_headers),f"{target_dir}/headers.csv")
+save_to_file(list(all_urls),f"{target_dir}/urls.csv")
+save_to_file(list(all_topdomains),f"{target_dir}/topdomains.csv")
+save_to_file(list(all_subdomains),f"{target_dir}/subdomains.csv")
+save_to_file(list(all_suffix),f"{target_dir}/suffix.csv")
