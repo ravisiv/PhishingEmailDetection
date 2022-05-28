@@ -2,16 +2,34 @@ import traceback
 import os
 from bs4 import BeautifulSoup
 from bs4.element import Comment
-import pandas as pd
 import email
 from email.parser import HeaderParser
 from urlextract import URLExtract
 import base64
 import sys
+import csv
 
-meta_urls = {}
-meta_headers = {}
+conf_file = "conf/phishing.yaml"
 
+def get_sha1_hash(data):
+    BUF_SIZE = 67108864  
+    sha1 = hashlib.sha1()
+    sha1.update(data)
+    return sha1.hexdigest()
+
+def save_to_file(filename):
+    with open(filename, 'w', newline='') as myfile:
+        (csv.writer(myfile, quoting=csv.QUOTE_ALL)).writerow(mylist)
+
+def get_target_dir(dirtype):
+	default_dir = "messages"
+	with open(conf_file, "r") as stream:
+		try:
+			conf_data = yaml.safe_load(stream)
+			return conf_data[dirtype]
+		except yaml.YAMLError as exc:
+			return default_dir
+	return default_dir
 
 # Reference:
 # https://stackoverflow.com/questions/17874360/python-how-to-parse-the-body-from-a-raw-email-given-that-raw-email-does-not
@@ -44,7 +62,6 @@ def parse_body(email_msg):
         return ret_val.strip()
     else:
         return body_text_conv.strip()
-
 
 
 #Reference https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text
@@ -133,9 +150,8 @@ for file in cur_files:
         f_realpath = os.path.realpath(f.name)
         print(f.name)
         if (f.name != ".msgtype"):
-            x = email.message_from_file(f)
             try:
-                headers,urls,topdomains,subdomains,suffix = get_urls_headers(msg)(x)
+                headers,urls,topdomains,subdomains,suffix = get_urls_headers(email.message_from_file(f))
                 all_headers.append(headers)
                 all_urls.append(urls)
                 all_topdomains.append(topdomains)
@@ -152,3 +168,13 @@ all_urls = list(set(all_urls))
 all_topdomains = list(set(all_topdomains))
 all_subdomains = list(set(all_subdomains))
 all_suffix = list(set(all_suffix))
+
+filename_digest = get_sha1_hash("".join(cur_files))
+conf_dir = get_target_dir("url")
+target_dir = f"{conf_dir}/{filename_digest}"
+
+save_to_file(f"{target_dir}/headers.csv")
+save_to_file(f"{target_dir}/urls.csv")
+save_to_file(f"{target_dir}/topdomains.csv")
+save_to_file(f"{target_dir}/subdomains.csv")
+save_to_file(f"{target_dir}/suffix.csv")

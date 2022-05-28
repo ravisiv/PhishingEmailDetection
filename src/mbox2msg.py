@@ -21,8 +21,8 @@ def savemsgtofile(dir_to_write, msg):
         gen = email.generator.Generator(out)
         gen.flatten(msg)
 
-conf_file = "/work/users/rsivaraman/capstone/conf/msgparser.yaml"
 
+conf_file = "/work/users/rsivaraman/capstone/conf/msgparser.yaml"
 def get_target_dir():
 	default_dir = "/scratch/users/rsivaraman/masterdata/msgfiles"
 	with open(conf_file, "r") as stream:
