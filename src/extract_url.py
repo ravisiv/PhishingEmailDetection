@@ -11,6 +11,15 @@ import csv
 
 conf_file = "conf/phishing.yaml"
 
+
+def get_domain(urlwithdomain):
+    res = tldextract.extract(urlwithdomain)
+    if res[2] == '':
+        return res[0], res[1], res[2]
+    else:
+        return res[0], res[1] + "." + res[2], res[2]
+
+
 def get_sha1_hash(data):
     BUF_SIZE = 67108864  
     sha1 = hashlib.sha1()
