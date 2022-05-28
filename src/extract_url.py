@@ -8,9 +8,14 @@ from urlextract import URLExtract
 import base64
 import sys
 import csv
+import tldextract
+import hashlib
 
 conf_file = "conf/phishing.yaml"
 
+
+def get_unicode(string):
+    return string.encode()
 
 def get_domain(urlwithdomain):
     res = tldextract.extract(urlwithdomain)
@@ -186,7 +191,8 @@ for file in cur_files:
                 print("--------------------------------ending------------")
                 continue
 
-filename_digest = get_sha1_hash("".join(cur_files))
+u_curfiles = map(get_unicode, cur_files)
+filename_digest = get_sha1_hash(' '.join(unicode.decode() for unicode in u_curfiles))
 conf_dir = get_target_dir("url")
 target_dir = f"{conf_dir}/{filename_digest}"
 
