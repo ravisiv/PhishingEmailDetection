@@ -1,2 +1,4 @@
 msgdir: /scratch/users/rsivaraman/masterdata/messages
 urldir: /scratch/users/rsivaraman/masterdata/urls
+datadir: /scratch/users/rsivaraman/masterdata/data
+modeldir: /scratch/users/rsivaraman/masterdata/models
