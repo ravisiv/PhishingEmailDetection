@@ -148,3 +148,9 @@ bin/tf_upgrade_v2
 *.icloud
 *.gz
 *.gz
+data/extdata/extlegiurls.csv
+data/extdata/extphishurls.csv
+data/extdata/filetype_entropy.csv
+data/filetype_entropy.csv
+data/filetype_entropy.csv
+data/filetype_entropy.csv
