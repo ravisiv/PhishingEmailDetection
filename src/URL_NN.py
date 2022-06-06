@@ -40,7 +40,7 @@ def get_target_dir(dirtype):
 	return default_dir
 
 # load data
-if sys.argv[0] == None or sys.argv[0] == "":
+if sys.argv[1] == None or sys.argv[1] == "":
     exit(0)
 data_file = sys.argv[1]
 df = pd.read_csv(data_file) # read in the csv file
@@ -54,8 +54,6 @@ corr_df = pd.DataFrame(df_X.corr().abs())
 # Multi Colliniarity analysis on Independent variables 
 upper_tri = corr_df.where(np.triu(np.ones(corr_df.shape),k=1).astype(np.bool))
 to_drop = [column for column in upper_tri.columns if any(upper_tri[column] > 0.99)]
-df['status'].replace(['legitimate', 'phishing'],
-                        [0, 1], inplace=True)
 
 X = df.drop(['status', 'url'],axis=1)
 ind_columns = df.drop('status',axis=1).columns
@@ -95,33 +93,6 @@ def plot_confusion_matrix(cm, classes,
     plt.xlabel('Predicted label')
     plt.tight_layout()
 
-
-LR = LogisticRegression()
-
-# define parameters
-#penalty_LR = ['l1', 'l2', 'elasticnet', 'none'] 
-penalty_LR = [ 'l1', 'l2'] 
-C_LR = [0.001, 0.01, 0.1, 1, 10, 100, 1000]  
-#C_LR = [0.001,10, 100]  
-max_iter_LR = [500]
-#max_iter_LR = [500]
-class_weight_LR = ['balanced']
-#solver_LR = ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']
-solver_LR = ['lbfgs', 'liblinear']
-
-# define random search
-param_random_LR = dict(penalty=penalty_LR, C=C_LR, max_iter=max_iter_LR, class_weight=class_weight_LR, solver=solver_LR)
-search_LR = RandomizedSearchCV(estimator=LR, param_distributions=param_random_LR, n_jobs=3, cv=cv, 
-                               scoring='accuracy',n_iter=20, verbose=5)
-
-result_LR = search_LR.fit(X_train, Y_train)
-# summarize results
-
-means = result_LR.cv_results_['mean_test_score']
-stds = result_LR.cv_results_['std_test_score']
-params = result_LR.cv_results_['params']
-# # The GridSearch algorithm determined the following optimal parameters
-best_Estimator_LR =result_LR.best_estimator_
 
 # #### Neural Network Model
 x_train, x_val, y_train, y_val = train_test_split(X_train, Y_train, stratify=Y_train, test_size=0.2, random_state=1234)

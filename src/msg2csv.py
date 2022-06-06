@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 from bs4.element import Comment
 from email.parser import HeaderParser
 from scipy.stats import entropy
-from urlextract import URLExtract
 import base64
 import bs4
 import email
@@ -17,26 +16,8 @@ import traceback
 from sys import exit
 import yaml
 from pathlib import Path
-
-conf_file = "conf/phishing.yaml"
-
-
-def get_sha1_hash(data):
-    BUF_SIZE = 67108864
-    sha1 = hashlib.sha1()
-    sha1.update(data.encode())
-    return sha1.hexdigest()
-
-
-def get_target_dir(dirtype):
-	default_dir = "messages"
-	with open(conf_file, "r") as stream:
-		try:
-			conf_data = yaml.safe_load(stream)
-			return conf_data[dirtype]
-		except yaml.YAMLError as exc:
-			return default_dir
-	return default_dir
+import ipaddress
+import phdcommon as conf
 
 
 def get_msg_type(msgdir):
@@ -46,103 +27,87 @@ def get_msg_type(msgdir):
     target = 0
     spam = 0
     with open(filename) as f:
-        lines = f.readlines()
-        for line in lines:
-            keyval = line.split("=")
-            if keyval[0] == "msgtype":
-                if keyval[1] == "spam":
-                    spam = 1
-                if keyval[1] == "phishing":
-                    target = 1
-                if keyval[1] == "promotions":
-                    promotion = 1
+        line = f.readlines()[0]
+        line = line.strip()
+        keyval = line.split("=")
+        if keyval[0] == "msgtype":
+            if keyval[1] == "spam":
+                spam = 1
+            if keyval[1] == "phishing":
+                target = 1
+            if keyval[1] == "promotions":
+                promotion = 1
     return target, spam, promotion
 
 
 def get_index(itype, param):
-    global topdomains_s
-    global subdomains_s
-    global suffix_s
-    global urls_s
-    global headers_s
-
+    global td_ind
+    global sd_ind
+    global suffix_ind
+    global urls_ind
+    global headers_ind
+    ret_val = 0
+    param = param.strip(",")
+    param = param.strip("'")
+    param = param.strip('"')
+    param = param.strip(' ')
+    if not param or param == "":
+        return 0
     try:
         if itype == "url":
-            urls_s.get_loc(param)
+            ret_val = urls_ind.get_loc(param)
         if itype == "topdomain":
-            topdomains_s.get_loc(param)
+            ret_val = td_ind.get_loc(param)
         if itype == "subdomain":
-            subdomains_s.get_loc(param)
+            ret_val = sd_ind.get_loc(param)
         if itype == "suffix":
-            suffix_s.get_loc(param)
+            ret_val = suffix_ind.get_loc(param)
         if itype == "header":
-            headers_s.get_loc(param)
-
-    except:
-        return 0
+            ret_val = headers_ind.get_loc(param)
+        return ret_val
+    except Exception as e:
+        print("cannot find: type:",itype,"value:",param,"error:",str(e)) 
+        return ret_val
 
 
 def get_email_as_dict(msg):
-    extractor = URLExtract()
     parser = email.parser.HeaderParser()
     headers = parser.parsestr(msg.as_string())
 
     emaildata = {}
-    all_urls = []
     all_urls_vectors = []
     all_headers_vectors = []
     all_topdomains_vectors = []
     all_subdomains_vectors = []
     all_suffix_vectors = []
-    for h in headers.items():
-        urls = extractor.find_urls(h[1])
-        all_urls = all_urls + urls
-        #base64 decode
-        if isBase64(h[1]):
-            try:
-                b64_h1 = base64.b64decode(h[1]).decode("utf-8")
-                urls = extractor.find_urls(str(b64_h1))
-                all_urls = all_urls + urls
-
-            except Exception as e:
-                b64_h1 = ""
-        # email_headers[h[0]] = [h[1]]
-        each_header = h[0]
-        strip_header = each_header.lower().strip()
-        header_index = get_index("header", strip_header)
+    headers = conf.get_headers(msg)
+    for header in headers:
+        header_index = get_index("header", header)
         all_headers_vectors.append(header_index)
 
     body, anchor_urls = parse_body(msg)
     attchments = get_attachments(msg)
     str_body = str(body)
     str_body = str_body.replace("\n", " ")
+    f.seek(0)
+    urls,td,sd,suffix = conf.get_urls(msg.as_string())
+    for each_url in urls:
+        url_index = get_index("url", each_url)
+        all_urls_vectors.append(url_index)
+    
+    for each_td in td:
+        topdomain_index = get_index("topdomain", each_td)
+        all_topdomains_vectors.append(topdomain_index)
+    
 
-    for chunk in str_body.split(" "):
-        urls = extractor.find_urls(chunk)
-        all_urls = all_urls + urls
+    for each_sd in sd:
+        subdomain_index = get_index("subdomain", each_sd)
+        all_subdomains_vectors.append(subdomain_index)
+        
 
-    all_urls = all_urls + anchor_urls
-
-    for each_url in all_urls:
-        try:
-            if each_url != None or each_url != "":
-                strip_url = each_url.lower().strip().replace(
-                    "\\n", "").replace("\\t", "").replace("nhttp", "http")
-                sdomain, tdomain, suffix = get_domain(strip_url)
-
-                url_index = get_index("url", strip_url)
-                all_urls_vectors.append(url_index)
-
-                subdomain_index = get_index("subdomain", sdomain)
-                all_subdomains_vectors.append(subdomain_index)
-
-                topdomain_index = get_index("topdomain", tdomain)
-                all_topdomains_vectors.append(topdomain_index)
-
-                suffix_index = get_index("suffix", tdomain)
-                all_suffix_vectors.append(suffix_index)
-        except:
-            continue
+    for each_suffix in suffix: 
+        suffix_index = get_index("suffix", each_suffix)
+        all_suffix_vectors.append(suffix_index)
 
     dict_row_urls = get_as_row(metatype="url", list_data=all_urls_vectors)
     dict_row_header = get_as_row(
@@ -182,12 +147,17 @@ def isBase64(sb):
 def get_domain(urlwithdomain):
     res = tldextract.extract(urlwithdomain)
     if res[2] == '':
-        return res[0], res[1], res[2]
+        subdomain = ""
+        topdomain = res[1] + "." + res[2]
+        suffix = res[2]
+        return subdomain, topdomain, suffix
     else:
-        return res[0], res[1] + "." + res[2], res[2]
+        subdomain = res[0] + "." + res[1] + "." + res[2]
+        topdomain = res[1] + "." + res[2]
+        suffix = res[2]
+        return subdomain, topdomain, suffix
 
-
-def get_as_row(metatype, list_data, max_cols=20):
+def get_as_row(metatype, list_data, max_cols=12):
     row = {}
     for index, eachitem in enumerate(list_data):
         row[metatype + str(index+1)] = eachitem
@@ -290,18 +260,17 @@ def get_attachments(email_msg):
 
 #Main method
 
-conf_dir = get_target_dir("urldir")
-master_urls = f"{conf_dir}/masterurls.csv"
-master_headers = f"{conf_dir}/masterheaders.csv"
-master_topdomains = f"{conf_dir}/mastertopdomains.csv"
-master_subdomains = f"{conf_dir}/mastersubdomains.csv"
-master_suffix = f"{conf_dir}/mastersuffix.csv"
+master_urls = conf.get_target("masterurls")
+master_headers = conf.get_target("masterheaders")
+master_topdomains = conf.get_target("mastertopdomains")
+master_subdomains = conf.get_target("mastersubdomains")
+master_suffix = conf.get_target("mastersuffix")
 
-topdomains_s = pd.read_csv(master_topdomains, squeeze=True)
-subdomains_s = pd.read_csv(master_subdomains, squeeze=True)
-suffix_s = pd.read_csv(master_suffix, squeeze=True)
-urls_s = pd.read_csv(master_urls, squeeze=True)
-headers_s = pd.read_csv(master_headers, squeeze=True)
+td_ind = pd.Index(pd.read_csv(master_topdomains, header=None).squeeze("columns"))
+sd_ind = pd.Index(pd.read_csv(master_subdomains, header=None).squeeze("columns"))
+suffix_ind = pd.Index(pd.read_csv(master_suffix, header=None).squeeze("columns"))
+urls_ind = pd.Index(pd.read_csv(master_urls,header=None).squeeze("columns"))
+headers_ind = pd.Index(pd.read_csv(master_headers, header=None).squeeze("columns"))
 
 if sys.argv[1] == None or sys.argv[1] == "":
     print("Argument mbox folder required!")
@@ -312,33 +281,41 @@ target, spam, promotion = get_msg_type(data_path)
 
 cur_files = next(os.walk(data_path))[2]
 
-all_email_data = []
+all_email_data =[] 
+all_cols = []
 for file in cur_files:
     with open(f"{data_path}/{file}") as f:
         f_realpath = os.path.realpath(f.name)
         if not ".msgtype" in f.name:
             try:
                 msg = email.message_from_file(f)
-                emaildata = get_email_as_dict(msg)
                 attachments = get_attachments(msg)
+                emaildata = get_email_as_dict(msg)
                 emaildata["attachment_count"] = attachments['attachment_count']
                 emaildata["spam"] = spam
                 emaildata["target"] = target
                 emaildata["promotion"] = promotion
-                all_email_data.append(emaildata)
-                print(".", end=" ")
+                all_email_data.append(emaildata.values())
+                if (len(all_cols) == 0):
+                    all_cols = emaildata.keys()
+                print("CSV generated:",f_realpath)
             except Exception as e:
-                print("--------------------------------starting------------")
-                print(traceback.format_exc())
-                print("--------------------------------ending------------")
-                continue
+                print("Skipped:", f_realpath, "due to ", str(e))
 
 email_df = pd.DataFrame.from_dict(all_email_data)
 
-filename_digest = get_sha1_hash("".join(cur_files))
+filename_digest = conf.get_sha1_hash("".join(cur_files))
 
-datadir = get_target_dir("datadir")
+data_root_dir = conf.get_target("datadir")
+columns_file = conf.get_target("columnsfile")
+
+datadir = f"{data_root_dir}/digest"
 target_dir = f"{datadir}/{filename_digest}"
 Path(target_dir).mkdir(parents=True, exist_ok=True)
 emaildata_file = f"{datadir}/{filename_digest}/emails.csv"
-email_df.to_csv(emaildata_file)
+print("Saving to ", emaildata_file)
+email_df.to_csv(emaildata_file, index=False, columns=None)
+
+with open(columns_file, 'w') as f:
+    f.write(",".join(all_cols))
+    f.close()

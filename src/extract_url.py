@@ -1,115 +1,79 @@
 import traceback
 import os
-import email
-from email.parser import HeaderParser
-from urlextract import URLExtract
 import base64
 import sys
-import csv
-import tldextract
-import hashlib
 import yaml
 from pathlib import Path
-
-conf_file = "conf/phishing.yaml"
-
-def get_domain(urlwithdomain):
-    res = tldextract.extract(urlwithdomain)
-    if res[2] == '':
-        return res[0], res[1], res[2]
-    else:
-        return res[0], res[1] + "." + res[2], res[2]
-
-
-def get_sha1_hash(data):
-    BUF_SIZE = 67108864  
-    sha1 = hashlib.sha1()
-    sha1.update(data.encode())
-    return sha1.hexdigest()
-
-def save_to_file(data,filename):
-    with open(filename, 'w', newline='') as myfile:
-        (csv.writer(myfile, quoting=csv.QUOTE_ALL)
-         ).writerows([[i] for i in data])
-
-def get_target_dir(dirtype):
-	default_dir = "messages"
-	with open(conf_file, "r") as stream:
-		try:
-			conf_data = yaml.safe_load(stream)
-			return conf_data[dirtype]
-		except yaml.YAMLError as exc:
-			return default_dir
-	return default_dir
-
-def get_headers(msg):
-    parser = email.parser.HeaderParser()
-    headers = parser.parsestr(msg.as_string())
-    all_headers = set()
-    for h in headers.items():
-        all_headers.add(h[0])
-
-    return all_headers
-
+import email
+import phdcommon as conf
 
 #Main method
 data_path = sys.argv[1]
-cur_files =  next(os.walk(data_path))[2]
 
 #get msg type
 all_headers = set()
 all_urls = set()
-all_strip_urls = set()
 all_topdomains = set()
 all_subdomains = set()
 all_suffix = set()
-for file in cur_files:
-    with open(f"{data_path}/{file}") as f:
-        f_realpath = os.path.realpath(f.name)
-        if not ".msgtype" in f.name:
-            try:
-                print(f.name)
-                msg = email.message_from_file(f)
-                headers = get_headers(msg)
-                all_headers.update(headers)
-                f.seek(0)
-                for line in f.readlines():
-                    extractor = URLExtract()
-                    for chunks in line.split(" "):
-                        urls = extractor.find_urls(chunks)
-                        all_urls.update(urls)
-                for each_url in list(all_urls):
-                    strip_url = each_url.lower().strip().replace(
-                        "\\n", "").replace("\\t", "").replace("nhttp", "http")
-                    sdomain, tdomain, suffix = get_domain(strip_url)
+filecount = 0
+all_names = ""
+for subdir, dirs, files in os.walk(data_path):
+    cur_files =  next(os.walk(subdir))[2]
+    for file in cur_files:
+        with open(f"{subdir}/{file}") as f:
+            f_realpath = os.path.realpath(f.name)
+            basename = os.path.basename(f_realpath)
+            all_names = basename + all_names
+            is_error = False
+            if not basename.startswith("."):
+                try:
+                    msg = email.message_from_file(f)
+                    headers = conf.get_headers(msg)
+                    all_headers.update(headers)
+                    f.seek(0)
+                    urls,td,sd,suffix = conf.get_urls(msg.as_string())
+                    all_urls.update(urls)
+                    all_topdomains.update(td)
+                    all_subdomains.update(sd)
+                    all_suffix.update(suffix)
+                except Exception as e:
+                    print(str(e))
+                    is_error = True
 
-                    if not strip_url.startswith("http"):
-                        strip_url = "http://" + strip_url
-                    if strip_url.startswith("@"):
-                        strip_url = "http://" + strip_url[1:]
-                    if sdomain:
-                        all_subdomains.add(sdomain)
-                    if tdomain:
-                        all_topdomains.add(tdomain)
-                    if suffix:
-                        all_suffix.add(suffix)
-                    if each_url:
-                        all_strip_urls.add(strip_url)
+            else:
+                is_error = True
+            if is_error:
+                print("Error-Skipped:", f_realpath)
+            else:
+                print("URL extracted:", f_realpath)
 
-            except Exception as e:
-                print("--------------------------------starting------------")
-                print(traceback.format_exc())
-                print("--------------------------------ending------------")
-                continue
+            f.close()
+            filecount += 1
 
-filename_digest = get_sha1_hash("".join(cur_files))
-conf_dir = get_target_dir("urldir")
-target_dir = f"{conf_dir}/{filename_digest}"
+data_root_dir = conf.get_target("datadir")
+data_dir = f"{data_root_dir}/digest"
+
+digest = conf.get_sha1_hash(all_names)
+target_dir = f"{data_dir}/{digest}"
 Path(target_dir).mkdir(parents=True, exist_ok=True)
 
-save_to_file(list(all_headers),f"{target_dir}/headers.csv")
-save_to_file(list(all_strip_urls),f"{target_dir}/urls.csv")
-save_to_file(list(all_topdomains),f"{target_dir}/topdomains.csv")
-save_to_file(list(all_subdomains),f"{target_dir}/subdomains.csv")
-save_to_file(list(all_suffix),f"{target_dir}/suffix.csv")
+header_target = f"{target_dir}/headers.csv"
+conf.save_to_file(list(all_headers),header_target)
+print("Saved", header_target)
 
+urls_target = f"{target_dir}/urls.csv"
+conf.save_to_file(list(all_urls), urls_target)
+print("Saved", urls_target)
+
+topdomains_target = f"{target_dir}/topdomains.csv"
+conf.save_to_file(list(all_topdomains),topdomains_target)
+print("Saved", topdomains_target)
+
+subdomains_target = f"{target_dir}/subdomains.csv"
+conf.save_to_file(list(all_subdomains),subdomains_target)
+print("Saved", subdomains_target)
+
+suffix_target = f"{target_dir}/suffix.csv"
+conf.save_to_file(list(all_suffix),suffix_target)
+print("Saved", suffix_target)

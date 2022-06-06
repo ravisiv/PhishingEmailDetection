@@ -6,32 +6,14 @@ import mailbox
 import bs4
 import email
 import yaml
-
-def get_sha1_hash(msg):
-    BUF_SIZE = 67108864  # lets read stuff in 64kb chunks!
-    sha1 = hashlib.sha1()
-    sha1.update(msg.as_string().encode('utf-8'))
-    return sha1.hexdigest()
-
+import phdcommon as conf
 
 def savemsgtofile(dir_to_write, msg):
-    filename = dir_to_write + get_sha1_hash(msg)
-    print(filename)
+    filename = dir_to_write + conf.get_sha1_hash(msg.as_string())
     with open(filename, 'w') as out:
         gen = email.generator.Generator(out)
         gen.flatten(msg)
 
-
-conf_file = "/work/users/rsivaraman/capstone/conf/msgparser.yaml"
-def get_target_dir():
-	default_dir = "/scratch/users/rsivaraman/masterdata/msgfiles"
-	with open(conf_file, "r") as stream:
-		try:
-			conf_data = yaml.safe_load(stream)
-			return conf_data["msgdir"]
-		except yaml.YAMLError as exc:
-			return default_dir
-	return default_dir
 
 def get_next_partition():
 	curdir =  next(os.walk(dir_to_write))[1]
@@ -42,6 +24,7 @@ def get_next_partition():
 
 ## Main Func
 mboxfile = sys.argv[1]
+print("Processing", mboxfile)
 mboxtype = ""
 if "phishing" in mboxfile.lower():
 	mboxtype = "phishing"
@@ -54,7 +37,7 @@ mbox_obj = mailbox.mbox(mboxfile)
 
 size=100
 
-dir_to_write = get_target_dir()
+dir_to_write = conf.get_target("msgdir")
 partition = get_next_partition()
 status = True
 while status:
@@ -74,7 +57,7 @@ while status:
 	else:
 		partition = get_next_partition()
 	
-
+total_processed = 0
 for idx, email_obj in enumerate(mbox_obj):
 	try:
 		count = idx % size
@@ -89,9 +72,10 @@ for idx, email_obj in enumerate(mbox_obj):
 				f.write("file="+mboxfile + "\n")
 				f.close()
 		savemsgtofile(target_dir,email_obj)
+		total_processed += 1
 	except Exception as e:
-		print(str(e))
+		print("Skipped an message due to error", str(e))
 		continue
-
+print("Total msg processed", total_processed)
 #End Main
 
