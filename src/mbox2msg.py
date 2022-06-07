@@ -19,7 +19,7 @@ def savemsgtofile(dir_to_write, msg):
 def get_next_partition():
 	curdir =  next(os.walk(dir_to_write))[1]
 	if len(curdir) == 0:
-		return 100
+		return 30000
 	else:
 		return int(max(curdir)) + 1
 
@@ -36,8 +36,7 @@ elif "promotions" in mboxfile.lower():
 
 mbox_obj = mailbox.mbox(mboxfile)
 
-size=100
-
+size=500
 dir_to_write = conf.get_target("msgdir")
 partition = get_next_partition()
 status = True
