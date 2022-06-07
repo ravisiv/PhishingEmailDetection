@@ -29,10 +29,9 @@ for row in url_df.iterrows():
             if url_vector > 0:
                 predicted_val = 0
                 try: 
-                    predicted_val = url_df.loc[url_vector].iat[predict_column]
+                    predicted_val = masteremail_df.loc[url_vector].iat[predict_column]
                 except:
                     predicted_val = 0
-            print("predicted val", predicted_val)
             if float(predicted_val) > predict_max_for_one:
                 predict_count+=1
     predict_row.append(predict_count)
@@ -44,8 +43,3 @@ dir_name = os.path.dirname(datafile)
 outfile = f"{dir_name}/allemail_p.csv"
 
 url_df.to_csv(outfile)
-
-
-
-
-

@@ -7,6 +7,7 @@ import bs4
 import email
 import yaml
 import phdcommon as conf
+import random
 
 def savemsgtofile(dir_to_write, msg):
     filename = dir_to_write + conf.get_sha1_hash(msg.as_string())
@@ -51,7 +52,7 @@ while status:
 				f.write("file="+mboxfile + "\n")
 				f.close()
 		except:
-			sleep(5)
+			sleep(random.randint(0, 9))
 			partition = get_next_partition()
 			continue
 	else:

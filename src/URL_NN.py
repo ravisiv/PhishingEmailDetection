@@ -26,18 +26,7 @@ import tensorflow as tf
 import warnings
 import xgboost as xgb
 import yaml
-
-conf_file = "conf/phishing.yaml"
-
-def get_target_dir(dirtype):
-	default_dir = "models"
-	with open(conf_file, "r") as stream:
-		try:
-			conf_data = yaml.safe_load(stream)
-			return conf_data[dirtype]
-		except yaml.YAMLError as exc:
-			return default_dir
-	return default_dir
+import phdcommon as conf
 
 # load data
 if sys.argv[1] == None or sys.argv[1] == "":
@@ -55,7 +44,7 @@ corr_df = pd.DataFrame(df_X.corr().abs())
 upper_tri = corr_df.where(np.triu(np.ones(corr_df.shape),k=1).astype(np.bool))
 to_drop = [column for column in upper_tri.columns if any(upper_tri[column] > 0.99)]
 
-X = df.drop(['status', 'url'],axis=1)
+X = df.drop(['status', 'url'],axis=1).values
 ind_columns = df.drop('status',axis=1).columns
 y = df['status']
 # We did normalize the attributes using StandardScaler() to scale them between 0 and 1 before running models.
@@ -120,6 +109,7 @@ nn_history = url_model.fit(x_train, y_train,
                  epochs=200, batch_size=25)
 
 
-target_dir = get_target_dir("modeldir")
+target_dir = conf.get_target("modeldir")
 model_folder = f"{target_dir}/URLNN"
 url_model.save(model_folder)
+print("External URL neural network saved:", model_folder)

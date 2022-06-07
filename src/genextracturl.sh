@@ -1,3 +1,4 @@
+#!/bin/bash
 
 conf_file="conf/phishing.yaml"
 

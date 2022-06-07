@@ -1,3 +1,4 @@
+#!/bin/bash
 conf_file="conf/phishing.yaml"
 
 MBOX_DIR=$(grep 'mboxdir' ${conf_file} | sed 's/^.*: //')

@@ -273,5 +273,5 @@ email_url_stats_df = pd.DataFrame(url_list, columns=url_headers)
 
 dname = os.path.dirname(outfile)
 Path(dname).mkdir(parents=True, exist_ok=True)
-email_url_stats_df.to_csv(outfile)
+email_url_stats_df.to_csv(outfile, index=False)
 print("Saved in",outfile)
