@@ -15,9 +15,9 @@ masteremailurlstats: /Users/ravis/Downloads/reduceddata/data/email_url_stats.csv
 columnsfile: /Users/ravis/Downloads/reduceddata/data/columnsheaders.csv
 p_emailurlstats: /Users/ravis/Downloads/reduceddata/data/predicted_email_url_stats.csv
 
-extphishurl-stats: /Users/ravis/Downloads/reduceddata/data/extdata/extphish_urlstats.csv
-extphishurls: /Users/ravis/Downloads/reduceddata/data/extdata/extphishurls.csv
-extlegiurl-stats: /Users/ravis/Downloads/reduceddata/data/extdata/extlegi_urlstats.csv
-extlegiurls: /Users/ravis/Downloads/reduceddata/data/extdata/extlegiurls.csv
-extmasterurl-stats: /Users/ravis/Downloads/reduceddata/data/extdata/extmaster_urlstats.csv
+extphishurl-stats: /Users/ravis/Downloads/reduceddata/extdata/extphish_urlstats.csv
+extphishurls: /Users/ravis/Downloads/reduceddata/extdata/extphishurls.csv
+extlegiurl-stats: /Users/ravis/Downloads/reduceddata/extdata/extlegi_urlstats.csv
+extlegiurls: /Users/ravis/Downloads/reduceddata/extdata/extlegiurls.csv
+extmasterurl-stats: /Users/ravis/Downloads/reduceddata/extdata/extmaster_urlstats.csv
 

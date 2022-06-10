@@ -17,7 +17,7 @@
 #Train Neural Network from External data and fill the predicted values for email URLs
 ./exturlNN.sh
 
-./genbertmodels.sh
+#./genbertmodels.sh
 
 #./genimagemodels.sh
 

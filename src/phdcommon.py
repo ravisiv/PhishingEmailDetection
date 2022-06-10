@@ -34,6 +34,27 @@ def sanitize_url(surl: str):
     except:
         pass
 
+    if surl.startswith("mailto"):
+        return None
+    if surl.startswith("file://"):
+        return None
+
+    surl = surl.strip("\n")
+    surl = surl.strip("\t")
+    surl = surl.strip("\r")
+    surl = surl.strip("\\t")
+    surl = surl.strip("\\n")
+    surl = surl.strip("\\r")
+
+    if surl.startswith("tel:"):
+        return None
+
+    if surl.startswith("\\thttp"):
+        surl = surl[2:]
+
+    if surl.startswith("\\nhttp"):
+        surl = surl[2:]
+
     if surl.startswith("nhttps://"):
         surl = surl[1:]
 
@@ -89,14 +110,15 @@ def get_urls(msgstr: str):
             if "." in chunks:
                 urls = extractor.find_urls(chunks)
                 for each_url in urls:
-                    strip_url = each_url.lower().strip().replace(
-                        "\\\\n", "").replace("\\\\t", "").replace("nhttp", "http")
-                    sdomain, tdomain, suffix = get_domain(
-                        strip_url)
-                    safe_url = sanitize_url(strip_url)
-                    safe_url = urllib.parse.quote_plus(safe_url)
-                    all_safe_urls.add(safe_url)
-                    all_topdomains.add(tdomain)
-                    all_subdomains.add(sdomain)
-                    all_suffix.add(suffix)
+                    if len(each_url) > 4:
+                        strip_url = each_url.lower().strip().replace(
+                            "\\\\n", "").replace("\\\\t", "").replace("nhttp", "http")
+                        sdomain, tdomain, suffix = get_domain(
+                            strip_url)
+                        safe_url = sanitize_url(strip_url)
+                        if safe_url:
+                            all_safe_urls.add(safe_url)
+                        all_topdomains.add(tdomain)
+                        all_subdomains.add(sdomain)
+                        all_suffix.add(suffix)
     return all_safe_urls, all_topdomains, all_subdomains,all_suffix

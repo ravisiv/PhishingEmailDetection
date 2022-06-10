@@ -6,6 +6,74 @@ import yaml
 from pathlib import Path
 import email
 import phdcommon as conf
+from bs4 import BeautifulSoup
+from bs4.element import Comment
+import tldextract
+
+def parse_body(email_msg):
+    bodies = []
+    body_texts = []
+    for part in email_msg.walk():
+        ctype = part.get_content_type()
+        cdispo = str(part.get('Content-Disposition'))
+        if ctype == 'text/plain' and 'attachment' not in cdispo:
+            body = part.get_payload(decode=True)
+            if body:
+                body_texts.append(str(body))
+        else:
+            body = email_msg.get_payload(decode=True)
+            if body:
+                body_texts.append(str(body))
+
+    ret_val = ""
+    if len(body_texts) > 0:
+        ret_val = "\n".join(body_texts)
+    body_text_conv = text_from_html(ret_val)
+    urls = urls_from_html(ret_val)
+
+
+    #Check if it is not html
+    if len(body_text_conv) == 0:
+        return ret_val.strip(), urls
+    else:
+
+        return body_text_conv.strip(), urls
+#Reference https://stackoverflow.com/questions/1936466/beautifulsoup-grab-visible-webpage-text
+
+
+def tag_visible(element):
+    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        return False
+    if isinstance(element, Comment):
+        return False
+    return True
+
+
+def urls_from_html(body):
+    if body == "":
+        return []
+    soup = BeautifulSoup(body, 'html.parser')
+    if soup:
+        urls = set()
+        for a in soup.find_all('a', href=True):
+            url = a['href']
+            if len(url) > 4:
+                if url.startswith("http:"):
+                    urls.add(url)
+        return list(set(urls))
+    else:
+        return []
+
+
+def text_from_html(body):
+    if body == "":
+        return ""
+    soup = BeautifulSoup(body, 'html.parser')
+    texts = soup.findAll(text=True)
+    visible_texts = filter(tag_visible, texts)
+    return u" ".join(t.strip() for t in visible_texts)
+
+
 
 #Main method
 data_path = sys.argv[1]
@@ -31,9 +99,20 @@ for subdir, dirs, files in os.walk(data_path):
                     msg = email.message_from_file(f)
                     headers = conf.get_headers(msg)
                     all_headers.update(headers)
+                    _, anchor_urls = parse_body(msg)
+                    safeurls = set()
+                    for eachurl in anchor_urls:
+                        safeurl = conf.get_urls(eachurl)
+                        if len(safeurl) > 0:
+                            for eachset in safeurl:
+                                if len(eachset) > 0:
+                                    saniurl = conf.sanitize_url(eachset.pop())
+                                    if len(saniurl) > 4:
+                                        safeurls.update(saniurl)
                     f.seek(0)
                     urls,td,sd,suffix = conf.get_urls(msg.as_string())
                     all_urls.update(urls)
+                    all_urls.update(safeurls)
                     all_topdomains.update(td)
                     all_subdomains.update(sd)
                     all_suffix.update(suffix)

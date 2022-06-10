@@ -262,12 +262,22 @@ url_list = []
 for index, row in url_df.iterrows():
     rawurl = row[0] 
     if rawurl:
-        url = unquote(rawurl)
-        print("Extracted URL features for ", url)
-        feat = extract_features(url)
-        if status < 10:
-            feat = feat + [status]
-        url_list.append(feat)
+        if rawurl:
+            try:
+                checklen = len(rawurl)
+                if checklen < 4:
+                    continue
+            except:
+                continue
+            print(rawurl)
+            try:
+                feat = extract_features(rawurl)
+                if status < 10:
+                    feat = feat + [status]
+                url_list.append(feat)
+            except:
+                print("Skipping", rawurl)
+                continue
 
 email_url_stats_df = pd.DataFrame(url_list, columns=url_headers)
 

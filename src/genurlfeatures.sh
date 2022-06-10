@@ -13,13 +13,13 @@ EXT_LEGISTATS_FILE=$(grep 'extlegiurl-stats' ${conf_file} | sed 's/^.*: //')
 
 EXT_MASTER_STATS_FILE=$(grep 'extmasterurl-stats' ${conf_file} | sed 's/^.*: //')
 
-echo "Generating URL features for email URLS"
-python3 feature_extractor.py $MASTER_URLS_FILE $EMAIL_STATS_FILE
+#echo "Generating URL features for email URLS"
+#echo python3 feature_extractor.py $MASTER_URLS_FILE $EMAIL_STATS_FILE
 
-echo "Generating URL features for external URLs"
-python3 feature_extractor.py $EXT_PHISHURLS_FILE $EXT_PHISHSTATS_FILE  1
+#echo "Generating URL features for external URLs"
+#python3 feature_extractor.py $EXT_PHISHURLS_FILE $EXT_PHISHSTATS_FILE  1
 
-python3 feature_extractor.py $EXT_LEGIURLS_FILE $EXT_LEGISTATS_FILE 0
+#python3 feature_extractor.py $EXT_LEGIURLS_FILE $EXT_LEGISTATS_FILE 0
 
 #Create a master extdata
 cp $EXT_PHISHSTATS_FILE $EXT_MASTER_STATS_FILE  

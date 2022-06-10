@@ -57,6 +57,7 @@ def plot_confusion_matrix(cm, classes,
 masteremails = conf.get_target("masteremails")
 df = pd.read_csv(masteremails)
 
+print(masteremails)
 # Removing all null columns
 column = 0
 describe_df = df.describe()
@@ -70,7 +71,7 @@ for each in describe_df.iloc[7]:
 missing_data_columns = df.columns[df.isnull().any()]
 
 df.fillna(value=df.mode().iloc[0], inplace=True)
-
+df_X = df.drop(['target' ], axis=1)
 corr_df = pd.DataFrame(df_X.corr().abs())
 upper_tri = corr_df.where(np.triu(np.ones(corr_df.shape), k=1).astype(np.bool))
 
@@ -106,6 +107,8 @@ solver_LR = ['lbfgs', 'liblinear']
 param_random_LR = dict(penalty=penalty_LR, C=C_LR, max_iter=max_iter_LR, class_weight=class_weight_LR, solver=solver_LR)
 
 
+#Create Cross Validation Procedure
+cv = StratifiedKFold(n_splits=10, random_state=1234, shuffle=True)
 search_LR = RandomizedSearchCV(estimator=LR, param_distributions=param_random_LR, n_jobs=3, cv=cv, 
                                scoring='accuracy',n_iter=20, verbose=5)
 

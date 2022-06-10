@@ -17,6 +17,7 @@ from sys import exit
 import yaml
 from pathlib import Path
 import ipaddress
+import urllib.parse
 import phdcommon as conf
 
 
@@ -86,6 +87,16 @@ def get_email_as_dict(msg):
         all_headers_vectors.append(header_index)
 
     body, anchor_urls = parse_body(msg)
+    safeurls = set()
+    for eachurl in anchor_urls:
+        safeurl = conf.get_urls(eachurl)
+        if len(safeurl)> 0:
+            for eachset in safeurl:
+                if len(eachset) > 0:
+                    saniurl = conf.sanitize_url(eachset.pop())
+                    if len(saniurl) > 4:
+                        safeurls.update(saniurl)
+                    safeurls.update(saniurl)
     attchments = get_attachments(msg)
     str_body = str(body)
     str_body = str_body.replace("\n", " ")
@@ -218,8 +229,13 @@ def urls_from_html(body):
         return []
     soup = BeautifulSoup(body, 'html.parser')
     if soup:
-        href_tags = soup.find_all(href=True)
-        return href_tags
+        urls = set()
+        for a in soup.find_all('a', href=True):
+            url = a['href']
+            if len(url) > 4:
+                if url.startswith("http:"):
+                    urls.add(url)
+        return list(set(urls))
     else:
         return []
 
@@ -300,7 +316,8 @@ for file in cur_files:
                     all_cols = emaildata.keys()
                 print("CSV generated:",f_realpath)
             except Exception as e:
-                print("Skipped:", f_realpath, "due to ", str(e))
+                print(traceback.format_exc())
+                print("#Skipped:", f_realpath, "due to ", str(e))
 
 email_df = pd.DataFrame.from_dict(all_email_data)
 
