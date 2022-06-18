@@ -1,0 +1,22 @@
+rootdir: /Users/ravis/Downloads/reduceddata
+mboxdir: mbox
+msgdir: messages
+urldir: urls
+datadir: data
+modeldir: models
+
+mastertopdomains: mastertopdomains.csv
+mastersubdomains: mastersubdomains.csv
+mastersuffix: mastersuffix.csv
+masterheaders: masterheaders.csv
+masteremails: masteremails.csv
+
+masteremailurlstats: email_url_stats.csv
+columnsfile: columnsheaders.csv
+p_emailurlstats: predicted_email_url_stats.csv
+
+extphishurl-stats: extdata/extphish_urlstats.csv
+extphishurls: extdata/extphishurls.csv
+extlegiurl-stats: extdata/extlegi_urlstats.csv
+extlegiurls: extdata/extlegiurls.csv
+extmasterurl-stats: extdata/extmaster_urlstats.csv

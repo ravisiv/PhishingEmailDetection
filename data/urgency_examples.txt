@@ -1,0 +1,59 @@
+1,Eleanor, you have an appointment scheduled with Dr. Jin at 10:30 tomorrow morning. Please be sure to arrive at 1010 A Street in Boston 15 minutes early!
+1,Sam, your rent payment for Jan 19 has not been received. Please click here to pay.
+1,Attention to our VIP’s! Click here a complimentary basket of fries for your table, before it is gone.
+1,Holiday weekend cancelation alert! Some rooms opened and we’re giving away two FREE nights in the lodge, lift tickets included. Click here to get before it is gone.
+1,Congratulations, you have won $1000 gift card, Click here to claim now.
+1,Your IRS tax refund is pending, You must get it within 2 hours. Click here to proceed.
+1,Amazon is giving away one Kindle for first 2000 customers. Click on this link to claim yours.
+1,Your IRS tax refund is pending, You must get it within 2 hours. Click here to proceed.
+1,Your amazon prime account is not paid, click here to pay, if not you will lose access in 1 day.
+1,Chase Bank-> Your account is locked due to unauthorized money transfer. Please log in to your account at http://cha.se/ to secure your bank account!
+1,Apple iCloud Notification. Your Apple ID will expire in 48 hours. Log in to prevent deletion of your account. Click here to login: http://app.le/unlock
+1,Coinbase-> You received 4.34 Bitcoins worth $36,345.21. Click here to claim yours.
+1,URGENT: your granddaughter was arrested in Mexico and she needs money for bail. Wire $2500 to post bail for your granddaughter by clicking here now. 
+1,You've won a $500 and you need to claim in 24 hours! Click bit.ly to claim your $500 gift card.
+1,Your credit card is locked due to suspecious charges. Click here to review transactions.
+1,UPS: You got a pending delivery. Click here to set yoru delivery preferences.
+1,Your Facebook password is changed. If you didn't change, please click here.
+1,Your Google Mail is temporarily suspended due to fradulent activities. Log in to your account to verify the details. Http://bit.ly/google/verify
+1,Your hospital bill has been posted and if not paid, it will be sent to collections. Click Update to update your account.
+1,Final Notice for your email verification. If not done in 2 hours, your email account will be suspended.
+1,Attached is the copy of your bill for your hostel visit. It is due now, if not paid, legal action may be taken now. Click Pay to pay your bill now.
+1,ALERT: Marie, Congress Could Sign 1.9tn Covid StimuIus Package! -Stop2Quit- Do You StilI In Need of Hardship Aid?
+1,ALERT: Josh, Congress Reaches 900biIlion Covid Relief Deal! -Stop2Quit- Are You StiIl In Need of Economic Assistance? Act now
+1,Yourr insurance is $$ 39/month here now. Best rates around! http://bit.ly/insurance
+1,We are having a down payment speacila today if you still need auto insurance please click http://bit.ly/insurance
+1,U S P S/(Alert!): We are Unable to delivery your Parcel Number :US33490118590 , please update your shipping address check here :
+1,WALMART ORDER: You have (1) PAID item in your cart. You forgot to set delivery preferences. Update delivery preferences NOW:
+1,ORDER ERROR: You have (1) PAID item in your cart. You forgot to set delivery preferences. Update delivery preferences NOW:
+1,[Urgent Notice] #ID309: An online payment of $89.50 has been deducted. IF THIS WAS NOT YOU, Please verify below:
+1,Due to unusual activity, we have placed a temporary hold on your online banking. To(Con’t) 2 of 4remove this hold , kindly verify your identity into details with the link provided HERE
+1,(CITI-BANK-FRAUD-DEPT) A hold has been placed to online banking due to recent activity. To restore full access go to
+1,Ćįti – We have freezed your banking account due to unusal logins from
+1,You have been selected for a CBD extract in gummy bears free sample. The benefits are insane. This ends tomorrow
+1,Breakthrough new revolutionary CBD Gummies that handles Type-2 immediately blows the sharks away.Drops A1C On The Spot!Heal Your Type 2 TodayGet Yours Right Now
+1,Are you or a loved one struggling to quit smoking? These Revolutionary new miracle CBD Gummies eliminates nicotine cravings completely. Get Yours Right Now+A35
+1,CongRatulations! Claim your FREE $100 gift- Card: https:ggiftcard4u/2wp.com
+1,Your PayPal account has been suspended due to suspicious activity.  Please contact us immediately at 1-409- 123-457 ex.1112 or visit https://paypal.mobile/111 222.com/txn?id-1112
+1,We are upgrading our database storage facility (NT06117) to a new and better server. To see if you qualify for a FREE upgrade, please provide your user name and password.
+1,Hi Kate, this is Rob from Amazon. I've tried to deliver your package twice, but have been unable to do so. Can vou please schedule here: u611.com/vtoRxPkJ7
+1,TDBA: our online account is under review. Suspicious activity detected.  To recover visit open247-unlock.com immediate action required.  Query: K3BV
+1,A not atuthorised attempt to logon your online was found.  Please login and access via utt.in/ 6gnikk to secure your online.
+1,Your iphone, gold, silver or pink is waiting. Get it here: s9gghi.com/ 778192871
+1,Hi Nancy! We tried to reach you at your address to give you this i7zxvinfo/xdbAAh6dr It's about your test results.
+1,Royal Mail: Your package is waiting for delivery. Please confirm the settlement of £1.99 on the following link:
+1,DPD-7895 Delivery Attempt made, recipient was not reached.Reschedule Delivery: http:// www.apd-parcel.cf
+1,From HMRC: The third lockdown has been announced, we have been issued a grant off £240 to help during this period, visit to claim :https:// govrebategrant.com/
+1,NHS: We have identified that your are eligible to apply for your vaccine. For more information and to apply, follow here: application-ukform.com
+1,HSBC FRAUD ALERT: You have authorised a payment of £240.00 to Mr C Jones. If this was not you, please cancel via: https:// onlinebanking-support-log= on.com
+1,Wells Frago Bank: Your Account has been limited due to suspicious login attempts you need to confirm your information in order to restore your online access now Note: this link will only be available for 24 hours: https://cutt.ly/XzPdvTi
+1,Apple Store: There has been a purchase made on your account : http://app.secure-user-verify.top
+1,Amazon : Your account is currently locked for security reasons. Please verify your payment information here https://amzlinkcentral.net/r/ LIAXRi9?code=UY33TW CASE ID : GIBUWDR4Q
+1,CENSUS: There is missing information from your Census application. Update your application please visit www.amend-statement.com to avoid $1000 fine.
+1,[Name], we came across a package from [a recent month] pending for you. Kindly claim ownership and confirm for delivery here: [link]. 
+1,Dear [Name], Bank of America is closing your bank account. Please confirm your PIN at [link] to keep your account activated. 
+1,You’ve won a prize! Go to [link] to claim your $500 Amazon gift card.
+1,Dear [Name], your AT&T billing statement is ready. Please review and send payment by [date] to avoid an overdue payment charge: [link]. 
+1,Your IRS tax refund is pending acceptance. Must accept within 24 hours: [link].
+1,URGENT Your grandson was arrested last night in Mexico. Need bail money immediately Western Union Wire $9,500: [link]. 
+1,Unusual Activity:[ID-84164] We were unable to validate details about your Amazon account, so we have suspended your account.  Unusual Activity from IP : 162.20.106.8 You will not be able to log in to the Amazons portal.  If you do not respond (by 13 Jun, 2022), your account will be deleted.  Please verify using the secure link below : https://ls.selangor.my/5RKiXJ Sincerely,  Amazon.

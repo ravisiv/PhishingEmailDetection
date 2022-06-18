@@ -81,51 +81,45 @@ def get_email_as_dict(msg):
     all_topdomains_vectors = []
     all_subdomains_vectors = []
     all_suffix_vectors = []
-    all_topdomains = set()
-    all_subdomains = set()
-    all_suffix = set()
-    all_headers = set()
-
-    is_error = False
-    try:
-        msg = email.message_from_file(f)
-        headers = conf.get_headers(msg)
-        all_headers.update(headers)
-        body_text, anchor_urls = parse_body(msg)
-        safeurls = set()
-        for eachurl in anchor_urls:
-            td, sd, suffix = conf.get_urls(eachurl)
-            all_topdomains.update(td)
-            all_subdomains.update(sd)
-            all_suffix.update(suffix)
-        f.seek(0)
-        td, sd, suffix = conf.get_urls(msg.as_string())
-        all_topdomains.update(td)
-        all_subdomains.update(sd)
-        all_suffix.update(suffix)
-    except Exception as e:
-        print(str(e))
-        is_error = True
-    if is_error:
-        print("Error-Skipped:", f_realpath)
-    attchments = get_attachments(msg)
-
-    str_body = str(body_text)
-    bad_chars = set("\n\t")
-    str_body = ''.join(c for c in str_body if c not in bad_chars)
-    for each_td in all_topdomains:
-        td_index = get_index("topdomain", each_td)
-        all_topdomains_vectors.append(td_index)
-    for each_sd in all_subdomains:
-        sd_index = get_index("subdomain", each_sd)
-        all_subdomains_vectors.append(sd_index)
-    for each_suf in all_suffix:
-        suf_index = get_index("suffix", each_suf)
-        all_suffix_vectors.append(suf_index)
-    for each_header in all_headers:
-        header_index = get_index("header", each_header)
+    headers = conf.get_headers(msg)
+    for header in headers:
+        header_index = get_index("header", header)
         all_headers_vectors.append(header_index)
+
+    body, anchor_urls = parse_body(msg)
+    safeurls = set()
+    for eachurl in anchor_urls:
+        safeurl = conf.get_urls(eachurl)
+        if len(safeurl)> 0:
+            for eachset in safeurl:
+                if len(eachset) > 0:
+                    saniurl = conf.sanitize_url(eachset.pop())
+                    if len(saniurl) > 4:
+                        safeurls.update(saniurl)
+                    safeurls.update(saniurl)
+    attchments = get_attachments(msg)
+    str_body = str(body)
+    str_body = str_body.replace("\n", " ")
+    f.seek(0)
+    urls,td,sd,suffix = conf.get_urls(msg.as_string())
+    for each_url in urls:
+        url_index = get_index("url", each_url)
+        all_urls_vectors.append(url_index)
+    
+    for each_td in td:
+        topdomain_index = get_index("topdomain", each_td)
+        all_topdomains_vectors.append(topdomain_index)
+    
+
+    for each_sd in sd:
+        subdomain_index = get_index("subdomain", each_sd)
+        all_subdomains_vectors.append(subdomain_index)
         
+
+    for each_suffix in suffix: 
+        suffix_index = get_index("suffix", each_suffix)
+        all_suffix_vectors.append(suffix_index)
+
     dict_row_urls = get_as_row(metatype="url", list_data=all_urls_vectors)
     dict_row_header = get_as_row(
         metatype="header", list_data=all_headers_vectors)
@@ -282,6 +276,7 @@ def get_attachments(email_msg):
 
 #Main method
 
+master_urls = conf.get_target("masterurls")
 master_headers = conf.get_target("masterheaders")
 master_topdomains = conf.get_target("mastertopdomains")
 master_subdomains = conf.get_target("mastersubdomains")
@@ -290,6 +285,7 @@ master_suffix = conf.get_target("mastersuffix")
 td_ind = pd.Index(pd.read_csv(master_topdomains, header=None).squeeze("columns"))
 sd_ind = pd.Index(pd.read_csv(master_subdomains, header=None).squeeze("columns"))
 suffix_ind = pd.Index(pd.read_csv(master_suffix, header=None).squeeze("columns"))
+urls_ind = pd.Index(pd.read_csv(master_urls,header=None).squeeze("columns"))
 headers_ind = pd.Index(pd.read_csv(master_headers, header=None).squeeze("columns"))
 
 if sys.argv[1] == None or sys.argv[1] == "":

@@ -67,7 +67,7 @@ def get_index(itype, param):
             ret_val = headers_ind.get_loc(param)
         return ret_val
     except Exception as e:
-        print("cannot find: type:",itype,"value:",param,"error:",str(e)) 
+        print("cannot find: type:", itype, "value:", param, "error:", str(e))
         return ret_val
 
 
@@ -76,7 +76,6 @@ def get_email_as_dict(msg):
     headers = parser.parsestr(msg.as_string())
 
     emaildata = {}
-    all_urls_vectors = []
     all_headers_vectors = []
     all_topdomains_vectors = []
     all_subdomains_vectors = []
@@ -88,7 +87,6 @@ def get_email_as_dict(msg):
 
     is_error = False
     try:
-        msg = email.message_from_file(f)
         headers = conf.get_headers(msg)
         all_headers.update(headers)
         body_text, anchor_urls = parse_body(msg)
@@ -111,8 +109,7 @@ def get_email_as_dict(msg):
     attchments = get_attachments(msg)
 
     str_body = str(body_text)
-    bad_chars = set("\n\t")
-    str_body = ''.join(c for c in str_body if c not in bad_chars)
+    str_body = str_body.replace("\\n", "").replace("\\t","").replace("\\r", "")
     for each_td in all_topdomains:
         td_index = get_index("topdomain", each_td)
         all_topdomains_vectors.append(td_index)
@@ -125,8 +122,7 @@ def get_email_as_dict(msg):
     for each_header in all_headers:
         header_index = get_index("header", each_header)
         all_headers_vectors.append(header_index)
-        
-    dict_row_urls = get_as_row(metatype="url", list_data=all_urls_vectors)
+
     dict_row_header = get_as_row(
         metatype="header", list_data=all_headers_vectors)
     dict_row_topdomain = get_as_row(
@@ -136,7 +132,6 @@ def get_email_as_dict(msg):
     dict_row_suffix = get_as_row(
         metatype="suffix", list_data=all_suffix_vectors)
 
-    emaildata.update(dict_row_urls)
     emaildata.update(dict_row_header)
     emaildata.update(dict_row_topdomain)
     emaildata.update(dict_row_subdomain)
@@ -173,6 +168,7 @@ def get_domain(urlwithdomain):
         topdomain = res[1] + "." + res[2]
         suffix = res[2]
         return subdomain, topdomain, suffix
+
 
 def get_as_row(metatype, list_data, max_cols=12):
     row = {}
@@ -287,10 +283,14 @@ master_topdomains = conf.get_target("mastertopdomains")
 master_subdomains = conf.get_target("mastersubdomains")
 master_suffix = conf.get_target("mastersuffix")
 
-td_ind = pd.Index(pd.read_csv(master_topdomains, header=None).squeeze("columns"))
-sd_ind = pd.Index(pd.read_csv(master_subdomains, header=None).squeeze("columns"))
-suffix_ind = pd.Index(pd.read_csv(master_suffix, header=None).squeeze("columns"))
-headers_ind = pd.Index(pd.read_csv(master_headers, header=None).squeeze("columns"))
+td_ind = pd.Index(pd.read_csv(master_topdomains,
+                  header=None).squeeze("columns"))
+sd_ind = pd.Index(pd.read_csv(master_subdomains,
+                  header=None).squeeze("columns"))
+suffix_ind = pd.Index(pd.read_csv(
+    master_suffix, header=None).squeeze("columns"))
+headers_ind = pd.Index(pd.read_csv(
+    master_headers, header=None).squeeze("columns"))
 
 if sys.argv[1] == None or sys.argv[1] == "":
     print("Argument mbox folder required!")
@@ -301,7 +301,7 @@ target, spam, promotion = get_msg_type(data_path)
 
 cur_files = next(os.walk(data_path))[2]
 
-all_email_data =[] 
+all_email_data = []
 all_cols = []
 for file in cur_files:
     with open(f"{data_path}/{file}") as f:
@@ -315,10 +315,10 @@ for file in cur_files:
                 emaildata["spam"] = spam
                 emaildata["target"] = target
                 emaildata["promotion"] = promotion
-                all_email_data.append(emaildata.values())
+                all_email_data.append(emaildata)
                 if (len(all_cols) == 0):
                     all_cols = emaildata.keys()
-                print("CSV generated:",f_realpath)
+                print("CSV generated:", f_realpath)
             except Exception as e:
                 print(traceback.format_exc())
                 print("#Skipped:", f_realpath, "due to ", str(e))
@@ -335,7 +335,7 @@ target_dir = f"{datadir}/{filename_digest}"
 Path(target_dir).mkdir(parents=True, exist_ok=True)
 emaildata_file = f"{datadir}/{filename_digest}/emails.csv"
 print("Saving to ", emaildata_file)
-email_df.to_csv(emaildata_file, index=False, columns=None)
+email_df.to_csv(emaildata_file, index=False)
 
 with open(columns_file, 'w') as f:
     f.write(",".join(all_cols))
