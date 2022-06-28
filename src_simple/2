@@ -3,10 +3,15 @@
 #Build All
 
 #Split mbox files as msg files
-./genmbox2msg.sh
+all:
+	echo "Building DARTH"
+
+
+	./genmbox2msg.sh
 
 #Extract URLs  and other metadata from msgs
-./genextracturl.sh
+extract_urls:
+	./genextracturl.sh
 
 #Generate CSV files from msg files
 ./genmsg2csv.sh
@@ -20,6 +25,7 @@
 #./genbertmodels.sh
 
 #./genimagemodels.sh
+
 
 
 #./genurltrustnetmodels.sh
