@@ -1,0 +1,22 @@
+#!/bin/bash
+#SBATCH -J pi
+#SBATCH -o pi_%j.out
+#SBATCH -p development
+#SBATCH -N 1
+#SBATCH --mem=10G
+
+module purge
+module load python/3
+command_flags="-J pi -o  pi_%j.out  -N 1 --mem 10G"
+MSG_DIR=/scratch/users/rsivaraman/masterdata/messages
+
+#python3 gen_mbox2csv2.py $SCRATCH/mboxfiles/mboxdata/Apurv-Promotions.mbox
+#python3 extract_url.py /scratch/users/rsivaraman/masterdata/messages/100
+
+for f in ${MSG_DIR}/*; do
+    if [ -d "$f" ]; then
+		jobid=$(sbatch $command_flags --wrap "python3 extract_url.py $f")
+		echo $jobid
+    fi
+done
+

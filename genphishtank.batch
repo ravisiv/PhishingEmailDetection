@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH -J pi
+#SBATCH -o out/pi_%j.out
+#SBATCH -p htc
+#SBATCH -N 1
+#SBATCH --mem=10G
+
+module purge
+module load python/3
+command_flags="-J pi -o  out/pi_%j.out -p htc -N 1 --mem 10G"
+PHISHTANK_DATA_DIR=/scratch/users/rsivaraman/masterdata/extdata
+OUTDIR=/scratch/users/rsivaraman/masterdata/urlmodeldata
+
+echo "Generating phishtank.csv url data"
+
+for f in ${PHISHTANK_DATA_DIR}/x*; do
+    if [ -f "$f" ]; then
+		bname=$(basename $f)
+        jobid=$(sbatch $command_flags --wrap "python3 feature_extractor.py $f ${OUTDIR}/${bname}.csv")
+        echo $jobid
+    fi
+done
+
+

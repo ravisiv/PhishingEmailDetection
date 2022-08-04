@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH -J pi
+#SBATCH -o out/pi_%j.out
+#SBATCH -N 1
+#SBATCH --mem=12G
+
+module purge
+cd /scratch/users/rsivaraman
+tar czf masterdata.tar.gz masterdata
+
+

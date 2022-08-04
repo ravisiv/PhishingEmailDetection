@@ -1,0 +1,12 @@
+#!/bin/bash
+#SBATCH -J pi
+#SBATCH -o pi_%j.out
+#SBATCH -p htc
+#SBATCH -N 1
+#SBATCH --mem=20G
+
+module purge
+module load python
+
+time python3 mbox2msg.py /scratch/users/rsivaraman/mboxfiles/mboxdata/Tai-Promotions.mbox /scratch/users/rsivaraman/mboxfiles/mboxdata/working/
+
